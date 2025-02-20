@@ -1,13 +1,15 @@
 'use client'
 
+'use client';
+
 import { useEffect, useState } from "react";
-import Layout from "./layout";
+import Layout from "./layout"; // Ensure the correct file path
 import { TonConnectButton, TonConnectUI } from "@tonconnect/ui-react";
 
 export default function Home() {
     const [tonBalance, setTonBalance] = useState("0");
     const [amount, setAmount] = useState("");
-    const [tonConnectUI, setTonConnectUI] = useState<any>(null);
+    const [tonConnectUI, setTonConnectUI] = useState<TonConnectUI | null>(null); // Fixed 'any'
 
     useEffect(() => {
         const tonUI = new TonConnectUI({
