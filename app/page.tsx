@@ -1,95 +1,46 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react';
-import { useTonConnectUI } from '@tonconnect/ui-react';
-import { Address } from "@ton/core";
+import { useEffect, useState } from "react";
+import Layout from "@/components/Layout";
+import { TonConnectButton, TonConnectUI } from "@tonconnect/ui-react";
 
 export default function Home() {
-  const [tonConnectUI] = useTonConnectUI();
-  const [tonWalletAddress, setTonWalletAddress] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+    const [tonBalance, setTonBalance] = useState("0");
+    const [amount, setAmount] = useState("");
+    const [tonConnectUI, setTonConnectUI] = useState<any>(null);
 
-  const handleWalletConnection = useCallback((address: string) => {
-    setTonWalletAddress(address);
-    console.log("Wallet connected successfully!");
-    setIsLoading(false);
-  }, []);
+    useEffect(() => {
+        const tonUI = new TonConnectUI({
+            manifestUrl: "https://markmon08.github.io/gemspider/tonconnect-manifest.json"
+        });
+        setTonConnectUI(tonUI);
+    }, []);
 
-  const handleWalletDisconnection = useCallback(() => {
-    setTonWalletAddress(null);
-    console.log("Wallet disconnected successfully!");
-    setIsLoading(false);
-  }, []);
-
-  useEffect(() => {
-    const checkWalletConnection = async () => {
-      if (tonConnectUI.account?.address) {
-        handleWalletConnection(tonConnectUI.account?.address);
-      } else {
-        handleWalletDisconnection();
-      }
-    };
-
-    checkWalletConnection();
-
-    const unsubscribe = tonConnectUI.onStatusChange((wallet) => {
-      if (wallet) {
-        handleWalletConnection(wallet.account.address);
-      } else {
-        handleWalletDisconnection();
-      }
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [tonConnectUI, handleWalletConnection, handleWalletDisconnection]);
-
-  const handleWalletAction = async () => {
-    if (tonConnectUI.connected) {
-      setIsLoading(true);
-      await tonConnectUI.disconnect();
-    } else {
-      await tonConnectUI.openModal();
-    }
-  };
-
-  const formatAddress = (address: string) => {
-    const tempAddress = Address.parse(address).toString();
-    return `${tempAddress.slice(0, 4)}...${tempAddress.slice(-4)}`;
-  };
-
-  if (isLoading) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center">
-        <div className="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded">
-          Loading...
-        </div>
-      </main>
+        <Layout>
+            <div className="bg-white/10 p-6 rounded-lg shadow-md w-80 animate-slideUp">
+                <h2 className="text-xl font-bold">Wallet Connection</h2>
+                <TonConnectButton />
+                <div className="mt-4">
+                    <p className="font-semibold">TON Balance:</p>
+                    <p>{tonBalance} TON</p>
+                    <p className="font-semibold mt-2">$SPIDEY Balance:</p>
+                    <p>0 SPIDEY</p>
+                </div>
+                <div className="mt-6">
+                    <h2 className="text-lg font-bold">Buy $SPIDER Tokens</h2>
+                    <input 
+                        type="number" 
+                        className="w-full p-2 rounded bg-gray-700 text-white" 
+                        placeholder="Enter TON amount" 
+                        value={amount} 
+                        onChange={(e) => setAmount(e.target.value)}
+                    />
+                    <button className="w-full mt-2 bg-green-500 p-2 rounded text-white hover:opacity-80">
+                        Buy $SPIDER
+                    </button>
+                </div>
+            </div>
+        </Layout>
     );
-  }
-
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold mb-8">TON Connect Demo</h1>
-      {tonWalletAddress ? (
-        <div className="flex flex-col items-center">
-          <p className="mb-4">Connected: {formatAddress(tonWalletAddress)}</p>
-          <button
-            onClick={handleWalletAction}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Disconnect Wallet
-          </button>
-        </div>
-      ) : (
-        <button
-          onClick={handleWalletAction}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Connect TON Wallet
-        </button>
-      )}
-    </main>
-  );
 }
