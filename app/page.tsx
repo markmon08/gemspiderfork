@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import Layout from "@/components/Layout";
+import Layout from "./layout";
 import { TonConnectButton, TonConnectUI } from "@tonconnect/ui-react";
 
 export default function Home() {
