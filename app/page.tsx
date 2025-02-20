@@ -1,21 +1,17 @@
 'use client'
 
-'use client';
-
 import { useEffect, useState } from "react";
-import Layout from "./layout"; // Ensure the correct file path
+import Layout from "./layout";
 import { TonConnectButton, TonConnectUI } from "@tonconnect/ui-react";
 
 export default function Home() {
-    const [tonBalance, setTonBalance] = useState("0");
+    const [tonBalance] = useState("0"); // Removed `setTonBalance`
     const [amount, setAmount] = useState("");
-    const [tonConnectUI, setTonConnectUI] = useState<TonConnectUI | null>(null); // Fixed 'any'
 
     useEffect(() => {
-        const tonUI = new TonConnectUI({
+        new TonConnectUI({ 
             manifestUrl: "https://markmon08.github.io/gemspider/tonconnect-manifest.json"
         });
-        setTonConnectUI(tonUI);
     }, []);
 
     return (
